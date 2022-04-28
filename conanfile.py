@@ -1,9 +1,10 @@
-from   conans       import ConanFile, CMake
+from   conans       import ConanFile, CMake, tools
 from   distutils.dir_util import copy_tree
 
 class BgfxConan(ConanFile):
     name            = "bgfx"
-    version         = "7816-3"
+    exports_sources = "bgfx.cmake/*"
+    source_folder   = "bgfx.cmake"
     description     = "Conan package for bgfx."
     url             = "https://github.com/bkaradzic/bgfx"
     license         = "BSD"
@@ -18,11 +19,9 @@ class BgfxConan(ConanFile):
             "multithreaded": True
             }
 
-    def source(self):
-        self.run("git clone git@github.com:firefalcom/bgfx.cmake.git")
-        self.run("cd bgfx.cmake && git checkout v%s" % self.version)
-        copy_tree("bgfx.cmake", ".")
-        self.run("git submodule update --init --recursive")
+    def set_version(self):
+        git = tools.Git(self.source_folder)
+        self.version = git.get_tag()[1:]
 
     def build(self):
         cmake          = CMake(self)
@@ -55,9 +54,7 @@ class BgfxConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["bgfx", "bimg", "bx"]
-        self.cpp_info.libs.extend(["astc-codec", "astc", "edtaa3", "etc1", "etc2", "iqa", "squish", "pvrtc", "tinyexr"])
-        if self.settings.os != "Switch":
-            self.cpp_info.libs.extend(["nvtt"])
+        self.cpp_info.libs.extend(["astc-codec", "astc", "edtaa3", "etc1", "etc2", "iqa", "squish", "pvrtc", "tinyexr", "nvtt"])
         if self.settings.os == "Macos":
             self.cpp_info.exelinkflags = ["-framework Cocoa", "-framework QuartzCore", "-framework OpenGL", "-weak_framework Metal"]
         if self.settings.os == "Linux":
