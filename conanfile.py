@@ -12,11 +12,15 @@ class BgfxConan(ConanFile):
     generators      = "cmake"
     options         = {
             "shared": [True, False],
-            "multithreaded": [True, False]
+            "multithreaded": [True, False],
+            "examples" : [True, False],
+            "tools" : [True, False],
             }
     default_options = {
             "shared": False,
-            "multithreaded": True
+            "multithreaded": True,
+            "examples" : False,
+            "tools" : False,
             }
 
     def set_version(self):
@@ -28,8 +32,8 @@ class BgfxConan(ConanFile):
         options = {
             "BUILD_SHARED_LIBS": self.options.shared,
             "BGFX_CONFIG_MULTITHREADED": self.options.multithreaded,
-            "BGFX_BUILD_EXAMPLES": False,
-            "BGFX_BUILD_TOOLS": False,
+            "BGFX_BUILD_EXAMPLES": self.options.examples,
+            "BGFX_BUILD_TOOLS": self.options.tools,
             "BGFX_OPENGL_VERSION": 33
             }
 
@@ -50,6 +54,9 @@ class BgfxConan(ConanFile):
         self.copy("*.lib", dst="lib", keep_path=False)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("shaderc", dst="bin")
+        self.copy("geometryc", dst="bin")
+        self.copy("geometryv", dst="bin")
+        self.copy("texturev", dst="bin")
         self.copy("*.exe", dst="bin", keep_path=False)
 
     def package_info(self):
